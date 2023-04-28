@@ -329,8 +329,6 @@ class CBPPlugin
             'Content-Type' => 'application/json',
             'idempotency-key' => $uuid
         );
-        
-                
 
         $data = array(
             'amount' => $this->convertToCents($amount),
@@ -350,25 +348,24 @@ class CBPPlugin
         ));
 
 
-        if ( is_wp_error( $response ) ) {
-            return wp_send_json( array(
+        if (is_wp_error($response)) {
+            return wp_send_json(array(
                 'success' => false,
                 'data' => ['error' => ['message' => $response->get_error_message()]],
-            ) );
+            ));
         }
-        
-        $response_code = wp_remote_retrieve_response_code( $response );
-        if ( $response_code === 401 ||  $response_code === 400 ) {
-            $response_body = wp_remote_retrieve_body( $response );
-            $response_data = json_decode( $response_body, true );
-            $error_message = isset( $response_data['error']['message'] ) ? $response_data['error']['message'] : 'Unauthorized';
-            return wp_send_json( array(
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        if ($response_code === 401 ||  $response_code === 400) {
+            $response_body = wp_remote_retrieve_body($response);
+            $response_data = json_decode($response_body, true);
+            $error_message = isset($response_data['error']['message']) ? $response_data['error']['message'] : 'Unauthorized';
+            return wp_send_json(array(
                 'success' => false,
                 'data' => ['error' => ['message' => $error_message]],
-                "tmp" => [$this->token, $headers]
-            ) );
+            ));
         }
-        
+
         $response_data = json_decode(wp_remote_retrieve_body($response), true);
 
         $response = array(
